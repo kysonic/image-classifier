@@ -63,6 +63,10 @@ tensorflowjs_converter \
 tf_files/quantized_graph.pb \
 tf_files/web
 
+### Labels
+
+cat tf_files/retrained_labels.txt | jq -Rsc '. / "\n" - [""]' > tf_files/web/labels.json
+
 ### Troubleshooting
 
 ImportError: No module named posixpath: 

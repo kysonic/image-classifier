@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import labels from '../models/labels.json';
+import labels from './labels.json';
 
 const IMAGE_SIZE = 128;
 
@@ -11,14 +11,13 @@ export class Classifier {
     }
 
     async init() {
-        console.log('Init');
         this.model = await tf.loadGraphModel('./assets/model.json');
         console.log('Model loaded');
     }
 
     async predict(img: any): Promise<any> {
         const t0 = performance.now()
-        const image = tf.fromPixels(img).toFloat()
+        const image = tf.browser.fromPixels(img).toFloat()
         const resized = tf.image.resizeBilinear(image, [IMAGE_SIZE, IMAGE_SIZE])
         const offset = tf.scalar(255 / 2)
         const normalized = resized.sub(offset).div(offset)
