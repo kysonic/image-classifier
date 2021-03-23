@@ -16,16 +16,16 @@ export class Classifier {
     }
 
     async predict(img: any): Promise<any> {
-        const t0 = performance.now()
-        const image = tf.browser.fromPixels(img).toFloat()
-        const resized = tf.image.resizeBilinear(image, [IMAGE_SIZE, IMAGE_SIZE])
-        const offset = tf.scalar(255 / 2)
-        const normalized = resized.sub(offset).div(offset)
-        const input = normalized.expandDims(0)
+        const t0 = performance.now();
+        const image = tf.browser.fromPixels(img).toFloat();
+        const resized = tf.image.resizeBilinear(image, [IMAGE_SIZE, IMAGE_SIZE]);
+        const offset = tf.scalar(255 / 2);
+        const normalized = resized.sub(offset).div(offset);
+        const input = normalized.expandDims(0);
         const output = await tf.tidy(() => this.model.predict({ input })).data();
         const predictions = labels
             .map((label: string, index: number) => ({ label, accuracy: output[index] }))
-            .sort((a: any, b: any) => b.accuracy - a.accuracy)
+            .sort((a: any, b: any) => b.accuracy - a.accuracy);
         const time = `${(performance.now() - t0).toFixed(1)} ms`;
         return { predictions, time }
     }
