@@ -1,7 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import labels from './labels.json';
-
-const IMAGE_SIZE = 128;
+import * as use from "@tensorflow-models/universal-sentence-encoder";
 
 export class Classifier {
     private model: any
@@ -11,23 +9,37 @@ export class Classifier {
     }
 
     async init() {
-        this.model = await tf.loadGraphModel('./assets/model.json');
+        this.model = await tf.loadLayersModel('./names.json/model.json');
         console.log('Model loaded');
     }
 
-    async predict(img: any): Promise<any> {
-        const t0 = performance.now();
-        const image = tf.browser.fromPixels(img).toFloat();
-        const resized = tf.image.resizeBilinear(image, [IMAGE_SIZE, IMAGE_SIZE]);
-        const offset = tf.scalar(255 / 2);
-        const normalized = resized.sub(offset).div(offset);
-        const input = normalized.expandDims(0);
-        const output = await tf.tidy(() => this.model.predict({ input })).data();
-        const predictions = labels
-            .map((label: string, index: number) => ({ label, accuracy: output[index] }))
-            .sort((a: any, b: any) => b.accuracy - a.accuracy);
-        const time = `${(performance.now() - t0).toFixed(1)} ms`;
-        return { predictions, time }
+    encodeData(data: any) {
+        const sentences = data.map((comment: any) => comment.text.toLowerCase());
+        const trainingData = use.load()
+            .then(model => {
+                return model.embed(sentences)
+                    .then(embeddings => {
+                        return embeddings;
+                    });
+            })
+            .catch(err => console.error('Fit Error:', err));
+
+        return trainingData
+    }
+
+    async predict(name: string): Promise<any> {
+        const ed = await this.encodeData([
+            {
+                text: name,
+                intent: "name"
+            }
+        ]);
+
+        const result = await this.model.predict(ed);
+
+        const [nameProbability, none] = await result.data();
+
+        return nameProbability > none;
     }
 }
 

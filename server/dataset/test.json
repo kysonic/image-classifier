@@ -1,0 +1,18 @@
+[
+  {
+    "text": "John Alister",
+    "intent": "name"
+  },
+  {
+    "text": "Random text",
+    "intent": "none"
+  },
+  {
+    "text": "asdsdsa",
+    "intent": "none"
+  },
+  {
+    "text": "Daniel Green",
+    "intent": "name"
+  }
+]
