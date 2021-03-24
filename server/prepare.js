@@ -4,7 +4,7 @@ const fs = require('fs');
 const _ = require('lodash');
 
 const CATEGORIES = [{
-    method: 'name.findName',
+    method: 'name.firstName',
     intent: 'name'
 }, {
     method: 'random.word',
